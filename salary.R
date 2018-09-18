@@ -30,19 +30,22 @@ us_salary<- c(128500,111500,92750,135750,93250,94500,97000,107250,104500,102000,
 salary <- append(ca_salary, us_salary)
 
 df <- data_frame(job, country, salary)
-
-salary_plot <- df %>% 
+df <- df %>% 
   spread(country, salary) %>% 
   mutate(Canada = Canada * exchange_rate) %>% # Convert from Cdn to USD
   mutate(Vancouver = Canada * (1 + yvr_adjustment), `San Francisco` = US * (1+sf_adjustment) ) %>% # Adjustment based on cities 
   select(-Canada, -US) %>%
-  gather(Vancouver, `San Francisco`, key=city, value=salary) %>%
+  gather(Vancouver, `San Francisco`, key=city, value=salary)
+
+salary_plot <- df  %>%
   ggplot(aes(x=job, y=salary, fill=city)) + 
   geom_bar(stat="identity", width=0.5  ,position=position_dodge()) +
   xlab("") +
   ylab("Salary in US Dollars") +
   labs(title="Salary Comparison") +
   coord_flip() 
+
+salary_plot
 
 ggsave(filename="salaries.png", plot = salary_plot)
 
